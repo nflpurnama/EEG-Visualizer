@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from flask import Flask, request, jsonify, render_template
 from forms import upload_edf_form
-from utils import convert_edf_to_b64, get_edf
+from utils import convert_edf_to_b64
 import io
 import os
 import tempfile
