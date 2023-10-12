@@ -16,7 +16,6 @@ def viewer():
 
 @app.route('/view', methods=['POST'])
 def view_edf():
-    # timestamp = request.form['timestamp']
     edf_file = request.files["file"]
     edf_bytes = edf_file.read()
     img_b64 = convert_edf_to_b64(edf_bytes=edf_bytes)
@@ -26,11 +25,11 @@ def view_edf():
 @app.route('/navigate', methods=['POST'])
 def navigate_timestamp():
     timestamp = request.form['timestamp']
-    edf_file = request.files["edf_file"]
+    edf_file = request.files["file"]
     edf_bytes = edf_file.read()
     img_b64 = convert_edf_to_b64(edf_bytes=edf_bytes, start=timestamp)
 
-    return jsonify({'result': "success"})
+    return Response(img_b64, content_type='image/png')
 
 
 if __name__ == "__main__":

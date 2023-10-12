@@ -17,19 +17,20 @@
     
     <div class="form-group">
       <label for="timestamp">EEG File</label>
-      <input type="time" id="timestamp">
+      <input type="time" id="timestamp" step=1 value="00:00:00">
       <button id="go-to">Go To</button>
+      <div id="timestamp-response"></div>
     </div>
     
     
     <!-- Placeholder for the EEG plot -->
     <div id="eeg-container"></div>
     
-    <div id="controls">
+    <!-- <div id="controls">
       <button id="load-button">Load Audio</button>
       <button id="play-button">Play</button>
       <button id="stop-button">Stop</button>
-    </div>
+    </div> -->
     <input type="file" id="file-input" style="display: none;">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>

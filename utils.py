@@ -8,7 +8,11 @@ import tempfile
 from datetime import time
 
 def convert_edf_to_b64(edf_bytes, start=0.0):
-    if isinstance(start, time):
+    if isinstance(start, str):
+          hours, minutes, seconds = map(int, start.split(':'))
+          start = hours * 3600 + minutes * 60 + seconds
+    
+    elif isinstance(start, time):
           start = start.hour * 3600 + start.minute * 60 + start.second
 
     # Read the EEG data
