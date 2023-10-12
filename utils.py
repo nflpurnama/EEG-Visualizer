@@ -1,19 +1,10 @@
-import base64
 import io
 import mne
 import matplotlib.pyplot as plt
-import secrets
 import os
 import tempfile
-from datetime import time
 
 def convert_edf_to_b64(edf_bytes, start=0.0):
-    if isinstance(start, str):
-          hours, minutes, seconds = map(int, start.split(':'))
-          start = hours * 3600 + minutes * 60 + seconds
-    
-    elif isinstance(start, time):
-          start = start.hour * 3600 + start.minute * 60 + start.second
 
     # Read the EEG data
     with tempfile.NamedTemporaryFile(delete=False, suffix=".edf") as temp_file:
@@ -23,6 +14,10 @@ def convert_edf_to_b64(edf_bytes, start=0.0):
     raw = mne.io.read_raw_edf(temp_file_path)
     raw = raw.pick_types(meg=False, eeg=True, eog=False, exclude='bads')
     
+    duration = raw.n_times / raw.info['sfreq']
+    if start > duration:
+        start = 0
+          
     # Plot the EEG data
     fig = raw.plot(show=False, start=start)
 

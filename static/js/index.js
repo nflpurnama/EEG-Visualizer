@@ -1,5 +1,6 @@
 $(document).ready(function(){
     $('#view-eeg').on('click', function(){
+        $('#view-eeg').prop('disabled', true);
         var fileInput = document.getElementById('file');
         var file = fileInput.files[0];
         if (file) {
@@ -9,7 +10,6 @@ $(document).ready(function(){
             let formData = new FormData()
             formData.append('file', file)
         
-
             fetch('/view', {
                 method: 'POST',
                 body: formData
@@ -21,21 +21,24 @@ $(document).ready(function(){
                 imgElement.src = imageUrl;
                 
                 document.getElementById('eeg-container').appendChild(imgElement);
+                $('#view-eeg').prop('disabled', false);
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-
         } else {
             document.getElementById('file-response').innerText = 'No file selected.';
+            $('#view-eeg').prop('disabled', false);
         }
     });
 
     $('#go-to').on('click', function(){
+        $('#go-to').prop('disabled', true);
         let fileInput = document.getElementById('file');
         let file = fileInput.files[0];
         if (file === undefined){
             document.getElementById('file-response').innerText = 'No file selected.';
+            $('#go-to').prop('disabled', false);
         }
 
         else{
@@ -44,10 +47,15 @@ $(document).ready(function(){
             
             let timestampInput = document.getElementById('timestamp');
             let timestampValue = timestampInput.value;
+            const [hours, minutes, seconds] = timestampValue.split(':').map(Number);
+            let timestampInSeconds = hours * 3600 + minutes * 60 + seconds;
             
+            console.log(timestampValue)
+            console.log(timestampInSeconds)
+
             let formData = new FormData()
             formData.append('file', file)
-            formData.append('timestamp', timestampValue)
+            formData.append('timestamp', timestampInSeconds)
 
             fetch('/navigate', {
                 method: 'POST',
@@ -59,6 +67,7 @@ $(document).ready(function(){
                 const imgElement = document.createElement('img');
                 imgElement.src = imageUrl;
                 document.getElementById('eeg-container').appendChild(imgElement);
+                $('#go-to').prop('disabled', false);
             })
             .catch(error => {
                 console.error('Error:', error);
