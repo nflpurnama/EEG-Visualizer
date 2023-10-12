@@ -1,2 +1,4 @@
 dataset
 *.log
+__pycache__/
+*.pyc
