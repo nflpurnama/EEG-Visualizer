@@ -5,8 +5,12 @@ import matplotlib.pyplot as plt
 import secrets
 import os
 import tempfile
+from datetime import time
 
-def convert_edf_to_b64(edf_bytes):
+def convert_edf_to_b64(edf_bytes, start=0.0):
+    if isinstance(start, time):
+          start = start.hour * 3600 + start.minute * 60 + start.second
+
     # Read the EEG data
     with tempfile.NamedTemporaryFile(delete=False, suffix=".edf") as temp_file:
             temp_file.write(edf_bytes)
@@ -16,7 +20,7 @@ def convert_edf_to_b64(edf_bytes):
     raw = raw.pick_types(meg=False, eeg=True, eog=False, exclude='bads')
     
     # Plot the EEG data
-    fig = raw.plot(show=False)
+    fig = raw.plot(show=False, start=start)
 
     # Save the plot to a BytesIO object
     img = io.BytesIO()
@@ -24,7 +28,7 @@ def convert_edf_to_b64(edf_bytes):
     img.seek(0)
 
     # Convert BytesIO object to base64 string
-    img_b64 = base64.b64encode(img.getvalue()).decode()
+    img_b64 = img.getvalue()
     
     # Delete temp file
     os.remove(temp_file_path)

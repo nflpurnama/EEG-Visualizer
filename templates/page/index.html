@@ -3,38 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="../style/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
     <title>EEG INFORMATICS FINAL PROJECT</title>
   </head>
   <body>
     <h1>EEG Plot</h1>
-    <form method="POST" action="" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <fieldset class="">
-            <legend class="">Upload EDF</legend>
-            <div class="">
-                {{ form.edf_file.label() }}
-                {{ form.edf_file(class="") }}
-                {% if form.edf_file.errors %}
-                    {% for error in form.edf_file.errors %}
-                        <span class="text-danger">{{ error }}</span></br>
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </fieldset>
-        <div class="">
-            {{ form.submit(class="") }}
-        </div>
-    </form>
+    <div class="form-group">
+      <label for="file">EEG File</label>
+      <input type="file" id="file">
+      <button id="view-eeg">View EEG</button>
+      <div id="file-response"></div>
+    </div>
+    
+    <div class="form-group">
+      <label for="timestamp">EEG File</label>
+      <input type="time" id="timestamp">
+      <button id="go-to">Go To</button>
+    </div>
+    
+    
     <!-- Placeholder for the EEG plot -->
-    <div>{{ eeg_plot | safe }}</div>
-
+    <div id="eeg-container"></div>
+    
     <div id="controls">
       <button id="load-button">Load Audio</button>
       <button id="play-button">Play</button>
       <button id="stop-button">Stop</button>
     </div>
     <input type="file" id="file-input" style="display: none;">
-    <script src="../js/index.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
   </body>
 </html>
