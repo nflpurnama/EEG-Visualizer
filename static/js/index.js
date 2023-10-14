@@ -82,4 +82,8 @@ $(document).ready(function(){
     $('#view-eeg').on('mouseup', function(){
         $("#view-eeg").removeClass("pressed-color")
     });
+
+    $('a').on('click', function(event){
+        event.preventDefault();
+    })
 });
