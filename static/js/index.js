@@ -83,7 +83,37 @@ $(document).ready(function(){
         $("#view-eeg").removeClass("pressed-color")
     });
 
-    $('a').on('click', function(event){
-        event.preventDefault();
+    $('#file').on('change', function(event){
+        const uploadedFile = event.target.files[0];
+        if (uploadedFile) {
+            $('#view-tab-nav').removeClass('disabled')
+            $('#predict-tab-nav').removeClass('disabled')
+        }
     })
+
+    $('#upload-tab-nav').on('click', navigateTab)
+
+    $('#view-tab-nav').on('click', navigateTab)
+
+    function navigateTab() {
+        const navId = '#' + $(this).attr('id')
+        const tabId = navId.replace('-nav', '')
+
+        const navs = ['#predict-tab-nav', '#upload-tab-nav', '#view-tab-nav']
+        navs.filter(nav => nav != navId)
+        .map(nav => {
+            $(nav).removeClass('disabled')
+            $(nav).removeClass('active')
+        })
+        
+        const tabs = ['#predict-tab', '#upload-tab', '#view-tab']
+        tabs.filter(tab => tab != tabId)
+        .map(tab => {
+            $(tab).addClass('d-none')
+        })
+
+        $(navId).addClass('disabled')
+        $(navId).addClass('active')
+        $(tabId).removeClass('d-none')
+    }
 });

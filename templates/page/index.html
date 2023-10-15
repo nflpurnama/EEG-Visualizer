@@ -12,33 +12,32 @@
     <div class="container-fluid">
       <ul class="nav nav-pills">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Upload EDF</a>
+          <button id='upload-tab-nav' class="nav-link active" aria-current="page" href="#">Upload EDF</button>
         </li>
         <li class="nav-item">
-          <a class="nav-link disabled" href="#">View EEG</a>
+          <button id='view-tab-nav' class="nav-link disabled" href="#">View EEG</button>
         </li>
         <li class="nav-item">
-          <a class="nav-link disabled" href="#">Predict</a>
+          <button id='predict-tab-nav' class="nav-link disabled" href="#">Predict</button>
         </li>
       </ul>
     </div>
-    <div class="form-group">
+    
+    <div id='upload-tab' class="form-group">
       <label for="file">EEG File</label>
       <input type="file" id="file">
-      <button id="view-eeg">View EEG</button>
-      <div id="file-response"></div>
     </div>
     
-    <div class="form-group">
+    <div id='view-tab' class="form-group d-none">
       <label for="timestamp">EEG File</label>
       <input type="time" id="timestamp" step=1 value="00:00:00">
       <button id="go-to">Go To</button>
       <div id="timestamp-response"></div>
+      <div id="eeg-container"></div>
     </div>
     
     
     <!-- Placeholder for the EEG plot -->
-    <div id="eeg-container"></div>
     
     <!-- <div id="controls">
       <button id="load-button">Load Audio</button>
