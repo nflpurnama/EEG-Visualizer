@@ -32,5 +32,10 @@ def navigate_timestamp():
 
     return Response(img_b64, content_type='image/png')
 
+@app.route('/predict', methods=['POST'])
+def predict_seizure():
+    #TODO - run model from uploaded edf file
+    return
+
 if __name__ == "__main__":
     app.run(debug=True)
