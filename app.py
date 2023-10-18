@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, Response
-from utils import convertEdfToB64
+from util.filemanager import retrieveEdf
+from util.generateimage import convertEdfToB64
 import logging
 
 app = Flask(__name__)
@@ -15,7 +16,8 @@ def home():
 def view_edf():
 
     edf_file = request.files["file"]
-    img_b64 = convertEdfToB64(edf_file)
+    temp_file_path = retrieveEdf(edf_file)
+    img_b64 = convertEdfToB64(temp_file_path)
 
     return Response(img_b64, content_type='image/png')
 
@@ -25,8 +27,8 @@ def navigate_timestamp():
     edf_file = request.files["file"]
 
     app.logger.debug(f"timestamp data type {type(timestamp)}")
-
-    img_b64 = convertEdfToB64(edf_file, start=timestamp)
+    temp_file_path = retrieveEdf(edf_file)
+    img_b64 = convertEdfToB64(temp_file_path, start=timestamp)
 
     return Response(img_b64, content_type='image/png')
 

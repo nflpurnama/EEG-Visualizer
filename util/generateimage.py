@@ -2,20 +2,12 @@ import io
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-# from seizure_detection.load import data_load
-# from seizure_detection.instantiatemne import mne_object
-from seizure_detection.filemanager import retrieveEdf
 import mne
-import os
 
-def convertEdfToB64(file, start=0.0):
+def convertEdfToB64(file_path: str, start=0.0):
 
-    # Read the EEG data
-    # df, freq = data_load(file)
-    # raw = mne_object(df, freq)
-
-    temp_file_path = retrieveEdf(file)
-    raw = mne.io.read_raw_edf(temp_file_path)
+    raw = mne.io.read_raw_edf(file_path)
+    df = raw.to_data_frame()
     raw = raw.pick_types(meg=False, eeg=True, eog=False, exclude='bads')
     
     duration = raw.n_times / raw.info['sfreq']
