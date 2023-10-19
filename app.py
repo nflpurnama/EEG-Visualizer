@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, Response, jsonify, session
 from util.filemanager import createTempEdfFile
 from util.generateimage import convertEdfToB64, convertEdfToMneRaw
+import os
 import logging
 
 app = Flask(__name__)
@@ -14,10 +15,13 @@ def home():
 
 @app.route('/upload', methods=['POST'])
 def upload_edf():
+    if session['edfpath']:
+        os.remove(session['edfpath'])
+    
     edf_file = request.files["file"]
     temp_file_path = createTempEdfFile(edf_file)
-    raw = convertEdfToMneRaw(temp_file_path)
-    session['raw'] = raw
+    session['edfpath'] = temp_file_path
+    return Response("Edf upload success. View EEG in 'View' tab.", content_type="text/plain", status=200)
     #Save raw as session
 
 @app.route('/view', methods=['POST'])

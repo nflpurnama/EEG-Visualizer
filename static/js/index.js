@@ -1,6 +1,54 @@
 $(document).ready(function(){
     const navs = ['#predict-tab-nav', '#upload-tab-nav', '#view-tab-nav', '#dataframe-tab-nav']
 
+    $('#upload').on('click', function(){
+        $("#upload-response").html('')
+
+        let fileInput = document.getElementById('file');
+        let file = fileInput.files[0];
+        
+        $('#upload').prop('disabled', true);
+
+        let formData = new FormData()
+        formData.append('file', file)
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            $("#upload-response").html(data)
+            navs.filter(nav => nav != '#upload-tab-nav')
+            .map(nav => {
+                $(nav).removeClass('disabled')
+            })
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        $('#upload').prop('disabled', false);
+    });
+
+    $('#view-tab-nav').on('click', function(){
+        navigateTab()
+        fetch('/view', {
+            method: 'GET',
+        })
+        .then(response => response.blob())
+        .then(data => {
+            const imageUrl = URL.createObjectURL(data);
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            document.getElementById('eeg-container').appendChild(imgElement);
+            $('#go-to').prop('disabled', false);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
     $('#go-to').on('click', function(){
         $('#go-to').prop('disabled', true);
         let fileInput = document.getElementById('file');
@@ -47,30 +95,9 @@ $(document).ready(function(){
     $('#file').on('change', function(event){
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {
-            $('#view-tab-nav').removeClass('disabled')
-            $('#predict-tab-nav').removeClass('disabled')
-
-            $('#eeg-container').empty();
-            
-            let formData = new FormData()
-            formData.append('file', uploadedFile)
-        
-            fetch('/view', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.blob())
-            .then(data => {
-                const imageUrl = URL.createObjectURL(data);
-                const imgElement = document.createElement('img');
-                imgElement.src = imageUrl;
-                
-                document.getElementById('eeg-container').appendChild(imgElement);
-            })
-            .then($('#view-tab-nav').click())
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            $("#upload").prop('disabled', false)
+        }else{
+            $("#upload").prop('disabled', true)
         }
     })
 
