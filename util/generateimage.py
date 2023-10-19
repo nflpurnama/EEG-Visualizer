@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 import mne
 
 def convertEdfToB64(file_path: str, start=0.0):
-
     raw = mne.io.read_raw_edf(file_path)
-    df = raw.to_data_frame()
     raw = raw.pick_types(meg=False, eeg=True, eog=False, exclude='bads')
     
     duration = raw.n_times / raw.info['sfreq']
@@ -31,3 +29,7 @@ def convertEdfToB64(file_path: str, start=0.0):
     img_b64 = img.getvalue()
     
     return img_b64
+
+def convertEdfToMneRaw(file_path: str):
+    raw = mne.io.read_raw_edf(file_path)
+    return raw

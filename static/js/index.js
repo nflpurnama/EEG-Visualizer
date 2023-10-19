@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    const navs = ['#predict-tab-nav', '#upload-tab-nav', '#view-tab-nav', '#dataframe-tab-nav']
+
     $('#go-to').on('click', function(){
         $('#go-to').prop('disabled', true);
         let fileInput = document.getElementById('file');
@@ -76,11 +78,32 @@ $(document).ready(function(){
 
     $('#view-tab-nav').on('click', navigateTab)
 
+    $('#dataframe-tab-nav').on('click', function(){
+        let fileInput = document.getElementById('file');
+        let file = fileInput.files[0];
+        
+        if (file !== undefined){
+            navigateTab()
+
+            let formData = new FormData()
+            formData.append('file', file)
+
+            fetch('/getdf', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    })
+
     function navigateTab() {
         const navId = '#' + $(this).attr('id')
         const tabId = navId.replace('-nav', '')
 
-        const navs = ['#predict-tab-nav', '#upload-tab-nav', '#view-tab-nav']
         navs.filter(nav => nav != navId)
         .map(nav => {
             $(nav).removeClass('disabled')
