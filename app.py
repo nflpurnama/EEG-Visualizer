@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, Response, jsonify, session
 from util.filemanager import createTempEdfFile
-from util.generateimage import convertEdfToB64, convertEdfToMneRaw
+from util.generateimage import convertRawToB64, convertEdfToMneRaw
 import os
 import logging
 
@@ -8,6 +8,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'any secret string'
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG)
+
+DEFAULT_EEG_START = 0
+DEFAULT_EEG_END = 10
 
 @app.route('/')
 def home():
@@ -24,14 +27,15 @@ def upload_edf():
     return Response("Edf upload success. View EEG in 'View' tab.", content_type="text/plain", status=200)
     #Save raw as session
 
-@app.route('/view', methods=['POST'])
+@app.route('/view', methods=['GET'])
 def view_edf():
     #obtain raw from session
+    temp_file_path = session['edfpath']
+    raw = convertEdfToMneRaw(temp_file_path)
     #trim a copy of raw
-    #convert copy to dataframe
-    edf_file = request.files["file"]
-    temp_file_path = createTempEdfFile(edf_file)
-    img_b64 = convertEdfToB64(temp_file_path)
+    raw = raw.crop(tmin=DEFAULT_EEG_START, tmax=DEFAULT_EEG_END)
+    #convert raw to image -- TODO: Explore client side rendering to send dataframe instead of image
+    img_b64 = convertRawToB64(raw)
 
     return Response(img_b64, content_type='image/png')
 
@@ -45,7 +49,7 @@ def navigate_timestamp():
 
     app.logger.debug(f"timestamp data type {type(timestamp)}")
     temp_file_path = createTempEdfFile(edf_file)
-    img_b64 = convertEdfToB64(temp_file_path, start=timestamp)
+    img_b64 = convertRawToB64(temp_file_path, start=timestamp)
 
     return Response(img_b64, content_type='image/png')
 

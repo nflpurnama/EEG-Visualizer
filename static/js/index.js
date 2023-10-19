@@ -2,12 +2,16 @@ $(document).ready(function(){
     const navs = ['#predict-tab-nav', '#upload-tab-nav', '#view-tab-nav', '#dataframe-tab-nav']
 
     $('#upload').on('click', function(){
+        $('#upload').prop('disabled', true);
+        navs.filter(nav => nav != '#upload-tab-nav')
+        .map(nav => {
+            $(nav).addClass('disabled')
+        })
         $("#upload-response").html('')
+        $('#eeg-container').html('');
 
         let fileInput = document.getElementById('file');
         let file = fileInput.files[0];
-        
-        $('#upload').prop('disabled', true);
 
         let formData = new FormData()
         formData.append('file', file)
@@ -23,12 +27,12 @@ $(document).ready(function(){
             .map(nav => {
                 $(nav).removeClass('disabled')
             })
+            $('#upload').prop('disabled', false);
         })
         .catch(error => {
             console.error('Error:', error);
         });
 
-        $('#upload').prop('disabled', false);
     });
 
     $('#view-tab-nav').on('click', function(){
