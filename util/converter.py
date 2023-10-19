@@ -3,6 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import mne
+import os
 
 def convertRawToB64(raw, start=0.0):
     raw = raw.pick_types(meg=False, eeg=True, eog=False, exclude='bads')
