@@ -3,6 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import mne
+from mne.io import Raw
 import os
 
 def convertRawToB64(raw, start=0.0):
@@ -32,4 +33,12 @@ def convertRawToB64(raw, start=0.0):
 
 def convertEdfToMneRaw(file_path: str):
     raw = mne.io.read_raw_edf(file_path)
+    print("RAW CREATED FROM TEMP FILE")
     return raw
+
+def convertRawToDataFrame(raw: Raw):
+    if not raw.preload:
+        raw.load_data()
+    
+    df = raw.to_data_frame()
+    return df

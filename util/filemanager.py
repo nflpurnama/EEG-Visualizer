@@ -8,4 +8,5 @@ def createTempEdfFile(file: FileStorage):
         temp_file.write(bytes)
         temp_file_path = temp_file.name
 
+        print("TEMP FILE WRITTEN")
         return temp_file_path
