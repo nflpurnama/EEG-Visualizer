@@ -15,8 +15,8 @@ def convertRawToB64(raw, start=0.0):
     
     plot_kwargs = {
         'scalings': dict(eeg=20e-5),   # zooms the plot out
-        'highpass': 0.5,              # filters out low frequencies
-        'lowpass': 70.,                # filters out high frequencies
+        # 'highpass': 0.5,              # filters out low frequencies
+        # 'lowpass': 70.,                # filters out high frequencies
     }
     # Plot the EEG data
     fig = raw.plot(show=False, start=start, **plot_kwargs)
