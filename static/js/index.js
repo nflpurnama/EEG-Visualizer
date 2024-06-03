@@ -63,13 +63,14 @@ $(document).ready(function(){
         })
         .then(response => response.text())
         .then(data => {
-            $("#upload-response").html(data)
+            $("#upload-response").html(data);
             navs.filter(nav => nav != '#upload-tab-nav')
             .map(nav => {
                 $(nav).removeClass('disabled')
-            })
+            });
             $('#upload').prop('disabled', false);
-            $('#get-df').prop('disabled', false)
+            $('#predict').prop('disabled', false);
+            $('#get-df').prop('disabled', false);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -77,20 +78,49 @@ $(document).ready(function(){
 
     });
 
-    $('#upload-tab-nav').on('click', function(event){navigateTab($(this))})
+    $('#predict').on('click', function(){
+        $('#predict').prop('disabled', true);
+        $('#predict-btn-label').addClass('d-none')
+        $('#predict-btn-load').removeClass('d-none')
+        navs.filter(nav => nav != '#upload-tab-nav')
+        .map(nav => {
+            $(nav).addClass('disabled')
+        })
+        $("#prediction-response").html('')
+        $('#eeg-container').html('');
+
+        fetch('/predict', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.prediction === 'Non-Epileptic'){
+                $('#predict-response').addClass('bg-success-subtle text-success')
+            }
+            else{
+                $('#predict-response').addClass('bg-danger-subtle text-danger')                
+            }
+                
+            $("#predict-response").html(data.prediction);
+            $('#predict-btn-label').removeClass('d-none')
+            $('#predict-btn-load').addClass('d-none')
+            $('#predict').prop('disabled', false);
+            $('#get-df').prop('disabled', false);
+            
+            navs.filter(nav => nav != '#upload-tab-nav')
+            .map(nav => {
+                $(nav).removeClass('disabled')
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    $('#upload-tab-nav').on('click', async function(event){ await navigateTab($(this))})
     
-    $('#view-tab-nav').on('click', function(event){navigateTab($('#view-tab-nav'))})
-
-    $('#dataframe-tab-nav').on('click', function(event){
-        let fileInput = document.getElementById('file');
-        let file = fileInput.files[0];
-        
-        if (file !== undefined){
-            navigateTab($(this))
-        }
-    })
-
-    $('#get-df').click(() => {
+    $('#view-tab-nav').on('click', async function(event){
+        navigateTab($('#view-tab-nav'))
         fetch('/view', {
             method: 'GET',
         })
@@ -99,7 +129,7 @@ $(document).ready(function(){
             if(data != undefined){
                 EEG_DATA = data
                 console.log(EEG_DATA)
-                plotEEGData(EEG_DATA)
+                plotEegData(EEG_DATA)
             }
         })
         .catch(error => {
@@ -107,64 +137,87 @@ $(document).ready(function(){
         });
     })
 
-// Function to plot EEG data for each channel
-function plotEEGData(eegData) {
-    Object.keys(eegData).forEach(channel => {
-        const ctx = document.createElement('canvas').getContext('2d');
-        ctx.canvas.width = 400;
-        ctx.canvas.height = 200;
-        document.body.appendChild(ctx.canvas);
+    $('#dataframe-tab-nav').on('click', async function(event){
+        let fileInput = document.getElementById('file');
+        let file = fileInput.files[0];
+        
+        if (file !== undefined){
+            await navigateTab($(this))
+        }
+    })
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [...Array(eegData[channel].length).keys()],
-                datasets: [{
-                    label: channel,
-                    data: eegData[channel],
-                    borderColor: 'blue',
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Time'
+// Function to plot EEG data for each channel
+function plotEegData(eegData) {
+    let array = Object.keys(eegData)
+    array.forEach((channel, index) => {
+        if (channel !== "time"){
+            const ctx = document.createElement('canvas').getContext('2d');
+            ctx.canvas.width = 150;
+            ctx.canvas.height = 30;
+            document.body.appendChild(ctx.canvas);
+    
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...Array(eegData[channel].length).keys()],
+                    datasets: [{
+                        label: channel,
+                        data: eegData[channel],
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false  // Hide the legend
                         }
                     },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'EEG Value'
+                    scales: {
+                        x: {
+                            title: {
+                                display: (index === array.length - 2) ? true : false,
+                                text: 'Time'
+    
+                            },
+                            ticks: {
+                                display: (index === array.length - 2) ? true : false  // Hide the x-axis ticks (numbers)
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: channel
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     });
 }
     
 
     function navigateTab(element) {
-        console.log(element)
-        const navId = "#" + element.attr('id')
-        const tabId = navId.replace('-nav', '')
+        return new Promise((resolve) => {
+            console.log(element)
+            const navId = "#" + element.attr('id')
+            const tabId = navId.replace('-nav', '')
 
-        navs.filter(nav => nav != navId)
-        .map(nav => {
-            $(nav).removeClass('disabled')
-            $(nav).removeClass('active')
-        })
-        
-        tabs.filter(tab => tab != tabId)
-        .map(tab => {
-            $(tab).addClass('d-none')
-        })
+            navs.filter(nav => nav != navId)
+            .map(nav => {
+                $(nav).removeClass('disabled')
+                $(nav).removeClass('active')
+            })
+            
+            tabs.filter(tab => tab != tabId)
+            .map(tab => {
+                $(tab).addClass('d-none')
+            })
 
-        $(navId).addClass('disabled')
-        $(navId).addClass('active')
-        $(tabId).removeClass('d-none')
+            $(navId).addClass('disabled')
+            $(navId).addClass('active')
+            $(tabId).removeClass('d-none')
+        })
     }
 });

@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>EEG INFORMATICS FINAL PROJECT</title>
   </head>
-  <body>
+  <body class="p-4">
     <h1>EEG Visualizer</h1>
     <div class="container-fluid">
       <ul class="nav nav-pills">
@@ -36,19 +36,26 @@
             View EEG
           </button>
         </li>
-        <li class="nav-item">
-          <button id="dataframe-tab-nav" class="nav-link disabled" href="#">
-            Get Dataframe
-          </button>
-        </li>
       </ul>
     </div>
 
-    <div id="upload-tab" class="form-group">
-      <label for="file">EEG File</label>
-      <input type="file" id="file" />
-      <button id="upload" disabled>Upload EDF</button>
-      <div id="upload-response"></div>
+    <div id="upload-tab" class="form-group p-2">
+      <div class="d-flex flex-column p-2">
+        <label for="file">EEG File</label>
+        <input type="file" id="file" />
+        <button id="upload" disabled>Upload EDF</button>
+        <div id="upload-response"></div>
+      </div>
+      
+      <div class="d-flex flex-column p-2">
+        <button id="predict" disabled>
+          <span id="predict-btn-label">Predict Annotation</span>
+          <div id="predict-btn-load" class="spinner-border d-none" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </button>
+        <div id="predict-response" class="p-2 text-center"></div>
+      </div>
     </div>
 
     <div id="view-tab" class="form-group d-none">
@@ -57,11 +64,6 @@
       <button id="go-to">Go To</button>
       <div id="timestamp-response"></div>
       <div id="eeg-container"></div>
-    </div>
-    
-    <div id="dataframe-tab" class="form-group d-none">
-      <button id="get-df" disabled>Get Dataframe</button>
-      <canvas id="eegChart" width="800" height="400"></canvas>
     </div>
 
     <!-- Placeholder for the EEG plot -->
@@ -73,6 +75,7 @@
     </div> -->
     <input type="file" id="file-input" style="display: none" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
   </body>

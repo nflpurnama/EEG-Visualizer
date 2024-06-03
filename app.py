@@ -7,6 +7,7 @@ import os
 import threading
 from mne.io import Raw
 from pandas import DataFrame
+from util.model import ModelHandler
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'any secret string'
@@ -17,12 +18,14 @@ DEFAULT_EEG_START = 0
 DEFAULT_EEG_END = 10
 DEFAULT_VIEW_INTERVAL = 10
 DEFAULT_USE_CHANNELS = ['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T7','T8','P7','P8','P9','P10', 'Fz', 'Cz', 'Pz','F9','F10','T9','T10']
+MODEL_PATH = "lightgbm_model_trials_50.pkl"
 
 # Shared variable
 raw : Raw
 df : DataFrame
 sfreq : int
 df_conversion_thread_event = threading.Event()
+model_handler = ModelHandler(MODEL_PATH)
 
 @app.route('/')
 def home():
@@ -60,7 +63,12 @@ def view_eeg():
     global sfreq
     len = DEFAULT_EEG_END * sfreq
     transposed_df = df.T
-    row_dict = {index: values.tolist() for index, values in transposed_df.iterrows()}
+    row_dict = {index: values[1::10].tolist() for index, values in transposed_df.iterrows()}
+
+    #FIND MIN-MAX VALUE TO USE AS SCALE
+    # transposed_df_channels = transposed_df.drop('Time', axis=1)
+    # min_y = 
+    # max_y = 
     # Return the JSON object as a response
     return jsonify(row_dict)
 
@@ -93,10 +101,10 @@ def get_df():
     return jsonify(paginated_data)
     
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET', 'POST'])
 def predict_seizure():
-    #TODO - run model from uploaded edf file
-    return
+    prediction = model_handler.predict(raw)
+    return jsonify({'prediction': prediction})
 
 def rawToDataFrameThread(raw: Raw):
     global df
