@@ -5,40 +5,24 @@ import matplotlib.pyplot as plt
 import mne
 from mne.io import Raw
 import os
+import base64
 
-def convertRawToB64(raw, start=0.0):
-    raw = raw.pick_types(meg=False, eeg=True, eog=False, exclude='bads')
-    
-    duration = raw.n_times / raw.info['sfreq']
-    if start > duration:
-        start = 0
-    
-    plot_kwargs = {
-        'scalings': dict(eeg=20e-5),   # zooms the plot out
-        # 'highpass': 0.5,              # filters out low frequencies
-        # 'lowpass': 70.,                # filters out high frequencies
-    }
-    # Plot the EEG data
-    fig = raw.plot(show=False, start=start, **plot_kwargs)
+def convertRawToB64Segments(raw):
+    duration = 5.0
+    b64Images = []
+    for i in range(0, int(raw.times[-1])+1, int(duration)):
+        raw.plot(duration=duration, start=i, scalings={'eeg':5e-5})
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        b64Image = base64.b64encode(img.getvalue()).decode('utf-8')
+        b64Images.append(b64Image)
+    return b64Images
 
-    # Save the plot to a BytesIO object
+def convertRawToB64PSD(raw):
+    raw.compute_psd().plot()
     img = io.BytesIO()
     plt.savefig(img, format='png')
     img.seek(0)
-
-    # Convert BytesIO object to base64 string
-    img_b64 = img.getvalue()
-    
-    return img_b64
-
-def convertEdfToMneRaw(file_path: str):
-    raw = mne.io.read_raw_edf(file_path)
-    print("RAW CREATED FROM TEMP FILE")
-    return raw
-
-def convertRawToDataFrame(raw: Raw):
-    if not raw.preload:
-        raw.load_data()
-    
-    df = raw.to_data_frame()
-    return df
+    b64Image = base64.b64encode(img.getvalue()).decode('utf-8')
+    return b64Image

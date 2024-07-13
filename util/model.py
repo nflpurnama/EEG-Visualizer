@@ -19,11 +19,11 @@ class ModelHandler:
     def load_model(self, model_path):
         return joblib.load(model_path)
 
-    def clean_rename_channel(self, Rawdata, use_ch):
+    def clean_rename_channel(self, Rawdata):
         replace_dict = {}
         drop_list = []
         for channel_name in Rawdata.info['ch_names']:
-            if channel_name in use_ch:
+            if channel_name in self.use_channels:
                 continue
             name_change=None
             if re.findall('\w+',channel_name)[0] in ['E','P']:
@@ -45,7 +45,7 @@ class ModelHandler:
     def clean_data(self, raw):
         raw.filter(l_freq=self.low_freq, h_freq=self.high_freq, skip_by_annotation='edge', filter_length=len(raw)-1, verbose=False)
         raw.resample(self.sampling, npad='auto', verbose=0)
-        return self.clean_rename_channel(raw, self.use_channels)
+        return self.clean_rename_channel(raw)
 
     def segment_annotated(self, times, onset_in_seconds, df):
         df["time"] = times
@@ -94,9 +94,7 @@ class ModelHandler:
         return self.extract_feature(segment)
 
     def predict(self, raw):
-        # Preprocess the input data
         processed_data = self.preprocess_data(raw)
-        # Make predictions
         prediction = (self.model.predict(processed_data)).tolist()[0]
         if prediction == 0:
             return 'Non-Epileptic';
