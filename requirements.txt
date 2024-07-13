@@ -2,3 +2,4 @@ Flask==3.0.0
 matplotlib==3.5.1
 mne==1.5.1
 numpy==1.24.4
+lightgbm
