@@ -1,0 +1,9 @@
+Flask
+lightgbm
+mne
+matplotlib
+pandas
+numpy
+scikit-learn
+pywavelets
+joblib

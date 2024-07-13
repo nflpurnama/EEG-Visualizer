@@ -4,6 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+flask = "*"
+lightgbm = "*"
+mne = "*"
+matplotlib = "*"
+pandas = "*"
+numpy = "*"
+scikit-learn = "*"
+pywavelets = "*"
+joblib = "*"
 
 [dev-packages]
 
