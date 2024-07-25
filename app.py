@@ -27,51 +27,55 @@ model_handler = ModelHandler(MODEL_PATH)
 
 @app.route('/')
 def home():
-    return render_template('page/index.html') 
+    return Response("Hello World.", content_type="text/plain", status=200)
+    # return render_template('page/index.html') 
 
-@app.route('/upload', methods=['POST'])
-def upload_edf():    
-    global filename
-    global raw
-    global sfreq
-    global df
+# @app.route('/upload', methods=['POST'])
+# def upload_edf():    
+#     global filename
+#     global raw
+#     global sfreq
+#     global df
     
-    edf_file = request.files["file"]
-    bytes = edf_file.read()
+#     edf_file = request.files["file"]
+#     bytes = edf_file.read()
 
-    with NamedTemporaryFile(delete=False, suffix=".edf") as temp_file:
-        temp_file.write(bytes)
-        temp_file_path = temp_file.name
-    filename = secure_filename(edf_file.filename)
-    raw = mne.io.read_raw_edf(temp_file_path)
-    raw = model_handler.clean_rename_channel(raw)
-    sfreq = int(raw.info['sfreq'])
+#     with NamedTemporaryFile(delete=False, suffix=".edf") as temp_file:
+#         temp_file.write(bytes)
+#         temp_file_path = temp_file.name
+#     filename = secure_filename(edf_file.filename)
+#     raw = mne.io.read_raw_edf(temp_file_path)
+#     raw = model_handler.clean_rename_channel(raw)
+#     sfreq = int(raw.info['sfreq'])
     
-    if not raw.preload:
-        raw.load_data()
-    df = raw.to_data_frame()
+#     if not raw.preload:
+#         raw.load_data()
+#     df = raw.to_data_frame()
 
-    if 'edf' in session:
-        try:
-            os.remove(session['edf'])
-        except FileNotFoundError:
-            pass
+#     if 'edf' in session:
+#         try:
+#             os.remove(session['edf'])
+#         except FileNotFoundError:
+#             pass
 
-    session['edf'] = temp_file_path
-    return Response("Edf upload success. View EEG in 'View' tab.", content_type="text/plain", status=200)
+#     session['edf'] = temp_file_path
+#     return Response("Edf upload success. View EEG in 'View' tab.", content_type="text/plain", status=200)
 
-@app.route('/view', methods=['GET'])
-def view_eeg():
-    global raw
-    b64EegImages = convertRawToB64Segments(raw)
-    b64PsdImage = convertRawToB64PSD(raw)
-    response = {'eeg':b64EegImages, 'psd': b64PsdImage}
-    return response
+# @app.route('/view', methods=['GET'])
+# def view_eeg():
+#     global raw
+#     b64EegImages = convertRawToB64Segments(raw)
+#     b64PsdImage = convertRawToB64PSD(raw)
+#     response = {'eeg':b64EegImages, 'psd': b64PsdImage}
+#     return response
 
-@app.route('/predict', methods=['GET', 'POST'])
-def predict_seizure():
-    prediction = model_handler.predict(raw)
-    return jsonify({'prediction': prediction})
+# @app.route('/predict', methods=['GET', 'POST'])
+# def predict_seizure():
+#     try:
+#         prediction = model_handler.predict(raw)
+#         return jsonify({'prediction': prediction})
+#     except Exception:
+#         return jsonify({'error': Exception})
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)

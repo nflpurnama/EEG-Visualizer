@@ -53,6 +53,9 @@ $(document).ready(function(){
             $(nav).addClass('disabled')
         })
         $("#upload-response").html('')
+        $("#predict-response").html('')
+        $('#predict-response').removeClass('bg-success-subtle text-success')
+        $('#predict-response').removeClass('bg-danger-subtle text-danger')
         $('#eeg-container').html('');
 
         let fileInput = document.getElementById('file');
@@ -98,7 +101,7 @@ $(document).ready(function(){
         .map(nav => {
             $(nav).addClass('disabled')
         })
-        $("#prediction-response").html('')
+        $("#predict-response").html('')
         $('#eeg-container').html('');
 
         fetch('/predict', {
